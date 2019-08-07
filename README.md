@@ -4,7 +4,7 @@ A Java based static IIIF tile generator. Static IIIF Tiles can be stored on a we
 ## Usage:
 By default and without configuration the iiif-tiler will generate version 2.0 image tiles in the iiif directory. To run this program do the following:
 
- 1. Download the `iiif-tiler.jar` from the releases page. 
+ 1. Download the `iiif-tiler.jar` from the [releases page](https://github.com/glenrobson/iiif-tiler/releases). 
  2. Save the `iiif-tiler.jar` to a directory where you would like to store the image tiles
  3. Drag an image on to the iiif-tiler.jar in the Finder or Windows interface.
  4. This will generate the IIIF tiles in a `iiif` directory. 
