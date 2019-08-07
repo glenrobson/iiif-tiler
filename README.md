@@ -15,6 +15,6 @@ Alternatively from the command line you can run the following:
 java -jar target/iiif-tiler.jar images/67352ccc-d1b0-11e1-89ae-279075081939.jpg
 ```
 
-## Options
+## Options
 
 This generates tiles that are compatible with [IIIF Version 2](https://iiif.io/api/image/2.1/) and [Version 3.0](https://iiif.io/api/image/3.0/). Currently this is hard coded in Tiler.java. 
