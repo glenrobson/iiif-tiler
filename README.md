@@ -17,4 +17,4 @@ java -jar target/iiif-tiler.jar images/67352ccc-d1b0-11e1-89ae-279075081939.jpg
 
 ## Options
 
-This generates tiles that are compatible with [IIIF Version 2](https://iiif.io/api/image/2.1/) and [Version 3.0](https://iiif.io/api/image/3.0/). Currently this is hard coded in Tiler.java. 
+This generates tiles that are compatible with [IIIF Version 2](https://iiif.io/api/image/2.1/) and [Version 3.0](https://iiif.io/api/image/3.0/). Currently this is hard coded in [Tiler.java](https://github.com/glenrobson/iiif-tiler/blob/939ce3f929b415dd97d780033c2eef8ab31c4854/src/main/java/uk/co/gdmrdigital/iiif/image/Tiler.java#L126). 
