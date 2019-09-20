@@ -9,16 +9,16 @@ import java.awt.Point;
 
 
 public class ImageInfo {
-    protected int _tileWidth = 256;
-    protected int _tileHeight = 256;
-    protected int _zoomLevels = 4;
+    protected int _tileWidth = 1024;
+    protected int _tileHeight = 1024;
+    protected int _zoomLevels = 2;
     protected IIIFImage _image = null;
     protected List<Integer> _scaleFactors = new ArrayList<Integer>();
     protected List<Point> _sizes = new ArrayList<Point>();
 
 
     public ImageInfo(final IIIFImage pImage) {
-        this(pImage, 256, 256, 4);
+        this(pImage, 1024, 1024, 2);
     }
 
     public ImageInfo(final IIIFImage pImage, final int pTileWidth, final int pTileHeight, final int pZoomLevel) {
