@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/glenrobson/iiif-tiler.svg?branch=master)](https://travis-ci.org/glenrobson/iiif-tiler)
+
 # iiif-tiler
 A Java based static IIIF tile generator. Static IIIF Tiles can be stored on a web service and provide a zoomable service with a compatible IIIF image viewers. This is known as a `level 0` image service. 
 
