@@ -24,3 +24,6 @@ hs_err_pid*
 
 .DS_Store
 *.swp
+
+target
+/iiif
