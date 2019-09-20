@@ -1,5 +1,6 @@
 language: java
 
+# Test this with multiple versions of java
 jdk:
     - oraclejdk8
     - oraclejdk9
