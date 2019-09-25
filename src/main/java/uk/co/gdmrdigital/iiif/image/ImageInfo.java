@@ -7,8 +7,12 @@ import java.util.ArrayList;
 
 import java.awt.Point;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class ImageInfo {
+    private static final Logger _logger = LogManager.getLogger();
+
     protected int _tileWidth = 1024;
     protected int _tileHeight = 1024;
     protected int _zoomLevels = 2;
@@ -23,10 +27,84 @@ public class ImageInfo {
 
     public ImageInfo(final IIIFImage pImage, final int pTileWidth, final int pTileHeight, final int pZoomLevel) {
         this.setImage(pImage);
-        this.initializeImageInfo();
         this.setTileWidth(pTileWidth);
         this.setTileHeight(pTileHeight);
         this.setZoomLevel(pZoomLevel);
+        this.initializeImageInfo();
+    }
+
+    public void fitToMaxFileNo(final int pMaxFileNo) {
+        int tMaxZoom = 4;
+        int tMaxTileSizeFacter = 5;
+        int tZoom = 0;
+        int tTileSize = 0;
+        boolean tFound  = false;
+        int tFileCount = 0;
+        outerloop:
+        for (int j = 1; j <= tMaxTileSizeFacter; j++) {
+            for (tZoom = tMaxZoom; tZoom > 0; tZoom--){
+                tTileSize = j * 256;
+                tFileCount = this.calculateFileCount(tZoom, tTileSize, tTileSize);
+                if (tFileCount < pMaxFileNo) {
+                    _logger.debug("Using TileSize: " + tTileSize + " Zoom: " + tZoom + " came back with " + tFileCount + " files. Target: " + pMaxFileNo );
+                    tFound = true;
+                    break outerloop;
+                } else {
+                    _logger.debug("Rejected TileSize: " + tTileSize + " Zoom: " + tZoom + " came back with " + tFileCount + " files. Target: " + pMaxFileNo );
+                }
+            }
+        }
+        if (tFound) {
+            this.setTileWidth(tTileSize);
+            this.setTileHeight(tTileSize);
+            this.setZoomLevel(tZoom);
+            this.initializeImageInfo();
+            _logger.debug("Found Goldilocks combinations " + this.toString() + " with a file count of " + tFileCount);
+        } else {    // Raies an exception
+            throw new IllegalArgumentException("Failed to find combination under " + pMaxFileNo + " files");
+        }
+    }
+
+    public int calculateFileCount() {
+        return this.calculateFileCount(_zoomLevels, _tileWidth, _tileHeight);
+    }
+
+    protected int calculateFileCount(final int pZoom, final int pTileWidth, final int pTileHeight) {
+        int tFileCount = 0;
+
+       // System.out.println("zoom: " + pZoom + " tile width " + pTileWidth);
+        boolean reachedMultipleFullsizedTile = false;
+        for (int tZoom = 0; tZoom < pZoom ; tZoom++) {
+            int tZoomFactor = (int)Math.pow(2, tZoom);
+            int tWidth = _image.getWidth() / tZoomFactor;
+            int tHeight = _image.getHeight() / tZoomFactor;
+            // Reached smallest tile
+            int tTileXCount = (int)Math.ceil((double)tWidth / pTileWidth);
+            int tTileYCount = (int)Math.ceil((double)tHeight / pTileHeight);
+            //System.out.println("Zoomfactor " + tZoomFactor + " tiles-x " + tTileXCount + " tiles-y " + tTileYCount + " width = " + tWidth + " tileCount = " + (tTileXCount * tTileYCount));
+            // each tile creates 4 files. 3 directories and 1 image
+            if (tWidth < pTileWidth && tHeight < pTileHeight) {
+                tFileCount += tTileXCount * tTileYCount * 3;
+                reachedMultipleFullsizedTile = true;
+            } else {
+                tFileCount += tTileXCount * tTileYCount * 4;
+            }    
+        }
+        // If the tile is bigger than the image size we add 3 directories but 
+        // for one we need to add 4.
+        if (reachedMultipleFullsizedTile) {
+            tFileCount++;
+        }
+      //  System.out.println("Total tiles " + tFileCount);
+        // Add full sizes (1 full directory then three sub directores (size/rotation/file)
+       // System.out.println("Sizes " + (((pZoom + 1) * 3) + 1) + " should be 16");
+        tFileCount += ((pZoom + 1) * 3) + 1;
+
+        // Add info.json
+        tFileCount++;
+        // Add containing directory
+        tFileCount++;
+        return tFileCount;
     }
 
     protected void initializeImageInfo() {
@@ -130,5 +208,20 @@ public class ImageInfo {
     protected void setImage(final IIIFImage pImage) {
         _image = pImage;
         this.initializeImageInfo();
+    }
+
+    public String toString() {
+        StringBuffer tBuff = new StringBuffer("Image info:\n");
+        tBuff.append("\tTile size; width: ");
+        tBuff.append("" + _tileWidth);
+        tBuff.append(", height: ");
+        tBuff.append(_tileHeight);
+        tBuff.append("\n\tZoomlevels: ");
+        tBuff.append("" + _zoomLevels);
+        tBuff.append("\n\t * Sizes:");
+        tBuff.append(_sizes.size());
+        tBuff.append("\n\t * ScaleFactors:");
+        tBuff.append(_scaleFactors);
+        return tBuff.toString();
     }
 }
