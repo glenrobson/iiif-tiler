@@ -18,10 +18,14 @@ import java.util.HashMap;
 
 import com.github.jsonldjava.utils.JsonUtils;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  *
  */
 public class Tiler {
+    private static final Logger _logger = LogManager.getLogger();
     protected ImageInfo _image = null;
     protected String _version = "";
 
@@ -36,14 +40,15 @@ public class Tiler {
 
     public void generateTiles(final File pImageDir) throws IOException {
         File tImgDir = this.getOutputDir(pImageDir);
-        System.out.println(pImageDir);
-        System.out.println(tImgDir);
+        _logger.debug("Using image info " + _image);
+        //System.out.println(pImageDir);
+        //System.out.println(tImgDir);
         this.generateSizes(tImgDir);
         this.generateScaleTiles(tImgDir);
     }
 
     protected void generateSizes(final File pImageDir) throws IOException {
-        System.out.println(pImageDir);
+        //System.out.println(pImageDir);
         // Generate sizes
         for (Point tSize : _image.getSizes()) {
             BufferedImage tScaledImage = new BufferedImage(tSize.x, tSize.y, BufferedImage.TYPE_INT_RGB);
@@ -88,8 +93,8 @@ public class Tiler {
                     }
 
                     String url = "./" + tileX + "," + tileY + "," + scaledTileWidth + "," + scaledTileHeight + "/" + tiledWidthCalc + ",/0/default.jpg";
-                    System.out.println("Zoom level: " + scale);
-                    System.out.println(url);
+                    //System.out.println("Zoom level: " + scale);
+                    //System.out.println(url);
                     File tOuputFile = new File(pImageDir, url);
                     tOuputFile.mkdirs();
 
@@ -120,9 +125,11 @@ public class Tiler {
         ImageInfo tImageInfo = new ImageInfo(tImage);
         if (pArgs.length == 2) {
             tImageInfo.setZoomLevel(Integer.parseInt(pArgs[1]));
-        } 
-        System.out.println("Zoom level : " + tImageInfo.getZoomLevel());
-        System.out.println("Sizes");
+        } else {
+            tImageInfo.fitToMaxFileNo(100);
+        }
+        //System.out.println("Zoom level : " + tImageInfo.getZoomLevel());
+        //System.out.println("Sizes");
         String tVersion = InfoJson.VERSION211;
         //String tVersion = InfoJson.VERSION3;
 
@@ -134,7 +141,7 @@ public class Tiler {
         
         JsonUtils.writePrettyPrint(new FileWriter(new File(tTiler.getOutputDir(tImgDir),"info.json")), tInfoJson);
 
-        System.out.println(tImageInfo.getSizes());
-        System.out.println(tImageInfo.getScaleFactors());
+        //System.out.println(tImageInfo.getSizes());
+       // System.out.println(tImageInfo.getScaleFactors());
     }
 }
