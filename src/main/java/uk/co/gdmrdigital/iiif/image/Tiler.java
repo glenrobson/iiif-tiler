@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -109,9 +110,30 @@ public class Tiler {
         }
     }
 
+    public static void createImages(final List<File> pFiles, final File pOutputDir, final int pZoomLevel, final int pMaxFileNo, final String pVersion) throws IOException {
+        for (File tInputFile : pFiles) {
+            IIIFImage tImage = new IIIFImage(tInputFile);
+
+            ImageInfo tImageInfo = new ImageInfo(tImage);
+            tImageInfo.setZoomLevel(pZoomLevel);
+            if (pMaxFileNo != -1) {
+                tImageInfo.fitToMaxFileNo(pMaxFileNo);
+            }    
+
+            Tiler tTiler = new Tiler(tImageInfo, pVersion);
+            tTiler.generateTiles(pOutputDir);
+
+            InfoJson tInfo = new InfoJson(tImageInfo, "http://localhost:8887/iiif/");
+            Map tInfoJson = tInfo.toJson(pVersion);
+            
+            JsonUtils.writePrettyPrint(new FileWriter(new File(tTiler.getOutputDir(pOutputDir),"info.json")), tInfoJson);
+            System.out.println("Converted " + tInputFile.getPath() + " to " + tTiler.getOutputDir(pOutputDir).getPath());
+        }
+    }
+
     public static void main(final String[] pArgs) throws IOException {
-        if (pArgs.length < 1 || pArgs.length > 2) {
-            System.out.println("Usage:\n\tjava uk.org.gdmrdigital.iiif.image.Tiler image [zoom levels]");
+        if (pArgs.length > 2) {
+            System.out.println("Usage:\n\tjava uk.org.gdmrdigital.iiif.image.Tiler [image] [zoom levels]");
             System.out.println("Images can be in the following format:");
             String[] imageFormats = ImageIO.getReaderFormatNames();
             for (int i = 0; i < imageFormats.length; i++) {
@@ -119,29 +141,39 @@ public class Tiler {
             }
             System.exit(-1);
         }
-        IIIFImage tImage = new IIIFImage(new File(pArgs[0]));
-        File tImgDir = new File("iiif");
-
-        ImageInfo tImageInfo = new ImageInfo(tImage);
-        if (pArgs.length == 2) {
-            tImageInfo.setZoomLevel(Integer.parseInt(pArgs[1]));
+        List<File> tInputFiles = new ArrayList<File>();
+        if (pArgs.length > 0) {
+            tInputFiles.add(new File(pArgs[0]));
         } else {
-            tImageInfo.fitToMaxFileNo(100);
+            // Look for supported files in the current directory
+            File tCurrentDir = new File(System.getProperty("user.dir"));
+            File[] tFiles = tCurrentDir.listFiles(new FilenameFilter() {
+                public boolean accept(final File dir, final String name) {
+                    String[] imageFormats = ImageIO.getReaderFormatNames();
+                    for (int i = 0; i < imageFormats.length; i++) {
+                        if (name.endsWith(imageFormats[i])) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
+            for (int i = 0; i < tFiles.length; i++) {
+                tInputFiles.add(tFiles[i]);
+            }
         }
-        //System.out.println("Zoom level : " + tImageInfo.getZoomLevel());
-        //System.out.println("Sizes");
+        int tZoom = 4;
+        int tMaxFileNo = -1;
+        if (pArgs.length == 2) {
+            tZoom = Integer.parseInt(pArgs[1]);
+        } else {
+            tMaxFileNo = 100;
+        }
+
+        File tOutputDir = new File("iiif");
+
         String tVersion = InfoJson.VERSION211;
         //String tVersion = InfoJson.VERSION3;
-
-        Tiler tTiler = new Tiler(tImageInfo, tVersion);
-        tTiler.generateTiles(tImgDir);
-
-        InfoJson tInfo = new InfoJson(tImageInfo, "http://localhost:8887/iiif/");
-        Map tInfoJson = tInfo.toJson(tVersion);
-        
-        JsonUtils.writePrettyPrint(new FileWriter(new File(tTiler.getOutputDir(tImgDir),"info.json")), tInfoJson);
-
-        //System.out.println(tImageInfo.getSizes());
-       // System.out.println(tImageInfo.getScaleFactors());
+        createImages(tInputFiles, tOutputDir, tZoom, tMaxFileNo, tVersion);
     }
 }
