@@ -6,7 +6,7 @@
 
   <groupId>uk.co.gdmrdigital.iiif.image</groupId>
   <artifactId>iiif-tiler</artifactId>
-  <version>0.9</version>
+  <version>0.9.1</version>
   <packaging>jar</packaging>
 
   <name>iiif-tiler</name>
@@ -86,6 +86,9 @@
                   <addClasspath>true</addClasspath>
                     <mainClass>uk.co.gdmrdigital.iiif.image.Tiler</mainClass>
                   </manifest>
+                  <manifestEntries>
+                      <Multi-Release>true</Multi-Release>
+                    </manifestEntries>
                 </archive>
               </configuration>
             </execution>
