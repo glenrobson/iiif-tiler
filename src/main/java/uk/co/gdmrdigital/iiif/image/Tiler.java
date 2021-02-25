@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+import com.mortennobel.imagescaling.ResampleOp;
+
 import javax.imageio.ImageIO;
 
 import java.io.File;
@@ -40,7 +42,11 @@ public class Tiler {
     }
 
     public void generateTiles(final File pImageDir) throws IOException {
-        File tImgDir = this.getOutputDir(pImageDir);
+        this.generateTiles(pImageDir, _image.getId());
+    }
+
+    public void generateTiles(final File pImageDir, final String pFilename) throws IOException {
+        File tImgDir = new File(pImageDir, pFilename);
         _logger.debug("Using image info " + _image);
         //System.out.println(pImageDir);
         //System.out.println(tImgDir);
@@ -52,11 +58,8 @@ public class Tiler {
         //System.out.println(pImageDir);
         // Generate sizes
         for (Point tSize : _image.getSizes()) {
-            BufferedImage tScaledImage = new BufferedImage(tSize.x, tSize.y, BufferedImage.TYPE_INT_RGB);
-			Graphics2D tGraphics = tScaledImage.createGraphics();
-			tGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-			tGraphics.drawImage(_image.getImage(), 0, 0, tSize.x, tSize.y, null);
-            
+            ResampleOp resizeOp = new ResampleOp(tSize.x, tSize.y);
+            BufferedImage tScaledImage = resizeOp.filter(_image.getImage(), null);
             String tSizeStr = tSize.x + ",";
             if (tSize.x == _image.getWidth() && tSize.y == _image.getHeight()) {
                 if (_version == InfoJson.VERSION3) { 
@@ -86,11 +89,13 @@ public class Tiler {
                     int tiledWidthCalc = _image.getTileWidth();
                     if (tileX + scaledTileWidth > _image.getWidth()) {
                         scaledTileWidth = _image.getWidth() - tileX;
-                        tiledWidthCalc = scaledTileWidth / scale;
+                        tiledWidthCalc = (int)Math.ceil((double)scaledTileWidth / scale);
                     }
                     int scaledTileHeight = _image.getTileHeight() * scale;
+                    int tiledHeightCalc = _image.getTileHeight();
                     if (tileY + scaledTileHeight > _image.getHeight()) {
                         scaledTileHeight = _image.getHeight() - tileY;
+                        tiledHeightCalc = (int)Math.ceil((double)scaledTileHeight / scale);
                     }
 
                     String url = "./" + tileX + "," + tileY + "," + scaledTileWidth + "," + scaledTileHeight + "/" + tiledWidthCalc + ",/0/default.jpg";
@@ -100,10 +105,9 @@ public class Tiler {
                     tOuputFile.mkdirs();
 
                     BufferedImage tTileImg = _image.getImage().getSubimage(tileX, tileY, scaledTileWidth, scaledTileHeight);
-                    BufferedImage tScaledImage = new BufferedImage(_image.getTileWidth(), _image.getTileHeight(), BufferedImage.TYPE_INT_RGB);
-                    Graphics2D tGraphics = tScaledImage.createGraphics();
-                    tGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                    tGraphics.drawImage(tTileImg, 0, 0, _image.getTileWidth(), _image.getTileHeight(), null);
+                    ResampleOp resizeOp = new ResampleOp(tiledWidthCalc, tiledHeightCalc);
+                    BufferedImage tScaledImage = resizeOp.filter(tTileImg, null);
+
                     ImageIO.write(tScaledImage, "jpg", tOuputFile);
                 }
             }
@@ -118,7 +122,9 @@ public class Tiler {
             tImageInfo.setZoomLevel(pZoomLevel);
             if (pMaxFileNo != -1) {
                 tImageInfo.fitToMaxFileNo(pMaxFileNo);
-            }    
+            } else {
+                tImageInfo.fitToZoomLevel();
+            }
 
             Tiler tTiler = new Tiler(tImageInfo, pVersion);
             tTiler.generateTiles(pOutputDir);
@@ -162,15 +168,14 @@ public class Tiler {
                 tInputFiles.add(tFiles[i]);
             }
         }
-        int tZoom = 4;
+        int tZoom = 5;
         int tMaxFileNo = -1;
         if (pArgs.length == 2) {
             tZoom = Integer.parseInt(pArgs[1]);
-        } else {
-            tMaxFileNo = 100;
         }
 
         File tOutputDir = new File("iiif");
+        System.out.println("Zoom level " + tZoom);
 
         String tVersion = InfoJson.VERSION211;
         //String tVersion = InfoJson.VERSION3;

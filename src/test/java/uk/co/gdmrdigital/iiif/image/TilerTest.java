@@ -19,6 +19,10 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -159,7 +163,7 @@ public class TilerTest {
         int tActualCount = tFiles.size() + 1; // add info.json
         _logger.debug("File count " + tActualCount);
 
-        assertEquals("Predicted number of files is different to the actual.", tPredictedCount, tActualCount);
+        assertEquals("Predicted number of files is different to the actual.", tPredictedCount + 1, tActualCount);
         assertTrue("Requested less than 100 files but got more", tActualCount < 100);
     }
 
@@ -192,6 +196,50 @@ public class TilerTest {
         assertTrue("Requested less than 100 files but got more", tActualCount < 100);
     }
 
+    @Test
+    public void testZoomLimit() throws IOException {
+        File tOutputDir = _tmp.newFolder("iiif");
+        File tImageFile = new File("images/van.jpg");
+
+        IIIFImage tImage = new IIIFImage(tImageFile);
+
+        ImageInfo tImageInfo = new ImageInfo(tImage, 256, 256, 5);
+
+        List<Point> estimatedSizes = new ArrayList<Point>();
+        for (int i = 5; i >= 0; i--) {
+            int ratio = (int)Math.pow(2, i);
+            estimatedSizes.add(new Point((int)Math.ceil((double)tImage.getWidth() / ratio), (int)Math.ceil((double)tImage.getHeight() / ratio)));
+        }
+
+        for (int i = 0 ; i < tImageInfo.getSizes().size(); i++) {
+            Point tPublishedSize = tImageInfo.getSizes().get(i);
+
+            assertEquals("Size " + i + " wasn't expected",  estimatedSizes.get(i), tPublishedSize);
+        }
+
+        Tiler tTiler = new Tiler(new ImageInfo(tImage, 1024, 1024, 5), InfoJson.VERSION211);
+        tTiler.generateTiles(tOutputDir);
+        BufferedImage tEdgeTile = ImageIO.read(new File(tOutputDir, "van/3072,2048,960,976/960,/0/default.jpg"));
+
+        assertEquals("Expected edge tile to be 996 pixels wide.", 960, tEdgeTile.getWidth());
+    }
+
+    @Test
+    public void testRounding() throws IOException {
+        File tOutputDir = _tmp.newFolder("iiif");
+        File tImageFile = new File("images/tractor.jpg");
+
+        IIIFImage tImage = new IIIFImage(tImageFile);
+
+        ImageInfo tImageInfo = new ImageInfo(tImage, 1024, 1024, 5);
+
+        Tiler tTiler = new Tiler(tImageInfo, InfoJson.VERSION211);
+        tTiler.generateTiles(tOutputDir);
+
+        assertTrue("Rounded down instead of UP. Found tractor/full/503,/0/default.jpg expected tractor/full/504,/0/default.jpg", !new File(tOutputDir, "tractor/full/503,/0/default.jpg").exists());
+        assertTrue("Correct rounding should exist. didn't find tractor: /full/504,/0/default.jpg", new File(tOutputDir, "tractor/full/504,/0/default.jpg").exists());
+        //assertTrue("Correct rounding should exist. Didn't find tractor: /2048,0,1983,2048/992,/0/default.jpg", new File(tOutputDir, "tractor/2048,0,1983,2048/992,/0/default.jpg").exists());
+    }   
 
     protected void printLevels(final List<String> pFiles) {
         Map<Integer, List<String>> tLevels = new java.util.HashMap<Integer, List<String>>();
