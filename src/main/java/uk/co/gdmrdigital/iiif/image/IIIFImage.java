@@ -21,7 +21,7 @@ public class IIIFImage {
         } catch (IOException exception) {
             throw exception;
         }
-        this.setId(pImageFile.getName().substring(0, pImageFile.getName().length() - 4));
+        this.setId(pImageFile.getName().split("\\.")[0]);
     }
 
     public String getId() {
