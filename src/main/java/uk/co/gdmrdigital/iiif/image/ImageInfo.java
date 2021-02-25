@@ -33,6 +33,23 @@ public class ImageInfo {
         this.initializeImageInfo();
     }
 
+    public void fitToZoomLevel() {
+       /* int[] tTileSize = {1024,512,256};
+        for (int i = 0; i < tTileSize.length; i++) {
+            System.out.println("Trying out tile size " + tTileSize[i] + " zoom level " + _zoomLevels + " Power " + Math.pow(2, _zoomLevels) + " width " + ((_image.getWidth() / Math.pow(2, _zoomLevels))) + " height " +  (_image.getHeight() / Math.pow(2, _zoomLevels)));
+            if ((_image.getWidth() / Math.pow(2, _zoomLevels)) > tTileSize[i] && (_image.getHeight() / Math.pow(2, _zoomLevels)) > tTileSize[i]) {
+                this.setTileWidth(tTileSize[i]);
+                this.setTileHeight(tTileSize[i]);
+                this.initializeImageInfo();
+                return;
+            }
+        }
+        System.out.println("Image is too small to produce " + _zoomLevels + " zoom levels.");
+        this.setTileWidth(tTileSize[2]);
+        this.setTileHeight(tTileSize[2]);*/
+        this.initializeImageInfo();
+    }
+
     public void fitToMaxFileNo(final int pMaxFileNo) {
         int tMaxZoom = 4;
         int tMaxTileSizeFacter = 5;
@@ -97,8 +114,9 @@ public class ImageInfo {
         }
       //  System.out.println("Total tiles " + tFileCount);
         // Add full sizes (1 full directory then three sub directores (size/rotation/file)
+        // And full w,h
        // System.out.println("Sizes " + (((pZoom + 1) * 3) + 1) + " should be 16");
-        tFileCount += ((pZoom + 1) * 3) + 1;
+        tFileCount += ((pZoom + 2) * 3) + 1;
 
         // Add info.json
         tFileCount++;
@@ -110,12 +128,11 @@ public class ImageInfo {
     protected void initializeImageInfo() {
         _scaleFactors = new ArrayList<Integer>();
         _sizes = new ArrayList<Point>();
-        int i = 1;
-        for (i = 1; i < _zoomLevels + 1; i++) {
-            _sizes.add(0, new Point((int)(_image.getWidth() / i), (int)(_image.getHeight() / i)));
-            _scaleFactors.add((int)Math.pow(2, i - 1));
+        for (int i = _zoomLevels; i >= 0; i--) {
+            int scale = (int)Math.pow(2, i);
+            _sizes.add(new Point((int)Math.ceil((double)_image.getWidth() / scale), (int)Math.ceil((double)_image.getHeight() / scale)));
+            _scaleFactors.add(scale);
         }
-        _sizes.add(0, new Point((int)(_image.getWidth() / i), (int)(_image.getHeight() / i)));
     }
 
     public String getId() {

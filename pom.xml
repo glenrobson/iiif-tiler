@@ -41,6 +41,13 @@
         <artifactId>log4j-core</artifactId>
         <version>2.12.1</version>
     </dependency>
+    <!-- from https://github.com/mortennobel/java-image-scaling -->
+     <dependency>
+            <groupId>com.mortennobel</groupId>
+            <artifactId>java-image-scaling</artifactId>
+            <version>0.8.5</version>
+        </dependency>
+
   </dependencies>
 
   <build>
@@ -64,7 +71,7 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.1</version>
         </plugin>
-     <plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <executions>
