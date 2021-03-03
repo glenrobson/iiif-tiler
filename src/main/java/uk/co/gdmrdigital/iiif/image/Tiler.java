@@ -116,11 +116,12 @@ public class Tiler {
 
     /** 
      * Pass a file to convert it to a IIIF static image.
-     * @param File the image file to convert
-     * @param File the output directory for the IIIF images. Note a sub directory will be created for each image 
-     * @param String pURI the identifier to use in the @id of the info.json. Note this method will add the identifier for the IIIF image to the end of this URL. So if the image file is a file called picture.jpg the URI could be http://localhost:8887/iiif and the identifier in the info.json would be http://localhost:8887/iiif/picture
-     * @param String Version either InfoJson.VERSION211 or InfoJson.VERSION3 
-     * @return File the directory that contains the IIIF image tiles
+     * @param pImageFile the image file to convert
+     * @param pOutputDir the output directory for the IIIF images. Note a sub directory will be created for each image 
+     * @param pURI the identifier to use in the @id of the info.json. Note this method will add the identifier for the IIIF image to the end of this URL. So if the image file is a file called picture.jpg the URI could be http://localhost:8887/iiif and the identifier in the info.json would be http://localhost:8887/iiif/picture
+     * @param pVersion either InfoJson.VERSION211 or InfoJson.VERSION3 
+     * @return the directory that contains the IIIF image tiles
+     * @throws IOException if there is an issue loading the source image or writing the IIIF image
      */
     public static File createImage(final File pImageFile, final File pOutputDir,  final String pURI, final String pVersion) throws IOException {
         IIIFImage tImage = new IIIFImage(pImageFile);
@@ -132,10 +133,12 @@ public class Tiler {
 
     /** 
      * Pass a ImageInfo to convert it to a IIIF static image. This method allows you to customise the zoom level and image idenfifier of the resulting IIIF image. To change the IIIF image idenifier use pImageFile.setId()
-     * @param ImageInfo the image file to convert
-     * @param File the output directory for the IIIF images. Note a sub directory will be created for each image 
-     * @param String pURI the identifier to use in the @id of the info.json. Note this method will add the identifier for the IIIF image to the end of this URL. So if the image file is a file called picture.jpg the URI could be http://localhost:8887/iiif and the identifier in the info.json would be http://localhost:8887/iiif/picture
-     * @param String Version either InfoJson.VERSION211 or InfoJson.VERSION3 
+     * @param pImageFile the image file to convert
+     * @param pOutputDir the output directory for the IIIF images. Note a sub directory will be created for each image 
+     * @param pURI the identifier to use in the @id of the info.json. Note this method will add the identifier for the IIIF image to the end of this URL. So if the image file is a file called picture.jpg the URI could be http://localhost:8887/iiif and the identifier in the info.json would be http://localhost:8887/iiif/picture
+     * @param pVersion either InfoJson.VERSION211 or InfoJson.VERSION3 
+     * @return the directory that contains the IIIF image tiles
+     * @throws IOException if there is an issue loading the source image or writing the IIIF image
      */
     public static File createImage(final ImageInfo pImageFile, final File pOutputDir,  final String pURI, final String pVersion) throws IOException {
         Tiler tTiler = new Tiler(pImageFile, pVersion);
@@ -151,12 +154,13 @@ public class Tiler {
 
     /** 
      * Pass a list of files to convert to IIIF static images
-     * @param List<File> a list of files to convert
-     * @param File the output directory for the IIIF images. Note a sub directory will be created for each image 
-     * @param int the maximum amount of zoom levels to include in the IIIF image. A good value is 5 which works with Leaflet
-     * @param int pMaxFileNo if you want the number of tiles and info.json to fit into a maximum supply this variable. 
+     * @param pFiles a list of files to convert
+     * @param pOutputDir the output directory for the IIIF images. Note a sub directory will be created for each image 
+     * @param pZoomLevel the maximum amount of zoom levels to include in the IIIF image. A good value is 5 which works with Leaflet
+     * @param pMaxFileNo if you want the number of tiles and info.json to fit into a maximum supply this variable. 
      * The number of zoom levels and tile sizes will be adjusted to try and fit the number of files under this limit. Set it to -1 to priortise the zoom level. 
-     * @param String Version either InfoJson.VERSION211 or InfoJson.VERSION3 
+     * @param pVersion either InfoJson.VERSION211 or InfoJson.VERSION3 
+     * @throws IOException if there is an issue loading the source image or writing the IIIF image
      */
     public static void createImages(final List<File> pFiles, final File pOutputDir, final int pZoomLevel, final int pMaxFileNo, final String pVersion) throws IOException {
         for (File tInputFile : pFiles) {

@@ -173,7 +173,7 @@ public class ImageInfo {
     /**
      * Set tileWidth.
      *
-     * @param tileWidth the value to set.
+     * @param pTileWidth the value to set.
      */
     public void setTileWidth(final int pTileWidth) {
          _tileWidth = pTileWidth;
@@ -182,7 +182,7 @@ public class ImageInfo {
     /**
      * Get tileHeight.
      *
-     * @return tileHeight as int.
+     * @return pTileHeight as int.
      */
     public int getTileHeight() {
         return _tileHeight;
@@ -191,7 +191,7 @@ public class ImageInfo {
     /**
      * Set tileHeight.
      *
-     * @param tileHeight the value to set.
+     * @param pTileHeight the value to set.
      */
     public void setTileHeight(final int pTileHeight) {
          _tileHeight = pTileHeight;
@@ -209,7 +209,7 @@ public class ImageInfo {
     /**
      * Set zoomLevel.
      *
-     * @param zoomLevel the value to set.
+     * @param pZoomLevel the value to set.
      */
     public void setZoomLevel(final int pZoomLevel) {
          _zoomLevels = pZoomLevel;
@@ -227,7 +227,7 @@ public class ImageInfo {
     /**
      * Set image.
      *
-     * @param image the value to set.
+     * @param pImage the value to set.
      */
     protected void setImage(final IIIFImage pImage) {
         _image = pImage;
