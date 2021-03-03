@@ -10,19 +10,22 @@ import java.awt.Point;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+/**
+ * This class provides information on the scale and sizes of the tiles. 
+ */
 public class ImageInfo {
     private static final Logger _logger = LogManager.getLogger();
 
     protected int _tileWidth = 1024;
     protected int _tileHeight = 1024;
-    protected int _zoomLevels = 2;
+    protected int _zoomLevels = 5;
     protected IIIFImage _image = null;
     protected List<Integer> _scaleFactors = new ArrayList<Integer>();
     protected List<Point> _sizes = new ArrayList<Point>();
 
 
     public ImageInfo(final IIIFImage pImage) {
-        this(pImage, 1024, 1024, 2);
+        this(pImage, 1024, 1024, 5);
     }
 
     public ImageInfo(final IIIFImage pImage, final int pTileWidth, final int pTileHeight, final int pZoomLevel) {
@@ -139,6 +142,10 @@ public class ImageInfo {
         return _image.getId();
     }
 
+    public void setId(final String pId) {
+        _image.setId(pId);
+    }
+
     public List<Integer> getScaleFactors() {
         return _scaleFactors;
     }
@@ -166,7 +173,7 @@ public class ImageInfo {
     /**
      * Set tileWidth.
      *
-     * @param tileWidth the value to set.
+     * @param pTileWidth the value to set.
      */
     public void setTileWidth(final int pTileWidth) {
          _tileWidth = pTileWidth;
@@ -175,7 +182,7 @@ public class ImageInfo {
     /**
      * Get tileHeight.
      *
-     * @return tileHeight as int.
+     * @return pTileHeight as int.
      */
     public int getTileHeight() {
         return _tileHeight;
@@ -184,7 +191,7 @@ public class ImageInfo {
     /**
      * Set tileHeight.
      *
-     * @param tileHeight the value to set.
+     * @param pTileHeight the value to set.
      */
     public void setTileHeight(final int pTileHeight) {
          _tileHeight = pTileHeight;
@@ -202,7 +209,7 @@ public class ImageInfo {
     /**
      * Set zoomLevel.
      *
-     * @param zoomLevel the value to set.
+     * @param pZoomLevel the value to set.
      */
     public void setZoomLevel(final int pZoomLevel) {
          _zoomLevels = pZoomLevel;
@@ -220,7 +227,7 @@ public class ImageInfo {
     /**
      * Set image.
      *
-     * @param image the value to set.
+     * @param pImage the value to set.
      */
     protected void setImage(final IIIFImage pImage) {
         _image = pImage;

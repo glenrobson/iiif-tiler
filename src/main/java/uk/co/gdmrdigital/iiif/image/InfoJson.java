@@ -7,6 +7,9 @@ import java.util.ArrayList;
 
 import java.awt.Point;
 
+/**
+ * This class generates the IIIF info.json for an image
+ */
 public class InfoJson {
     public static String VERSION211 = "2.1.1";
     public static String VERSION3 = "3.0";
