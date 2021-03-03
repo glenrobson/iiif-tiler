@@ -10,19 +10,22 @@ import java.awt.Point;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+/**
+ * This class provides information on the scale and sizes of the tiles. 
+ */
 public class ImageInfo {
     private static final Logger _logger = LogManager.getLogger();
 
     protected int _tileWidth = 1024;
     protected int _tileHeight = 1024;
-    protected int _zoomLevels = 2;
+    protected int _zoomLevels = 5;
     protected IIIFImage _image = null;
     protected List<Integer> _scaleFactors = new ArrayList<Integer>();
     protected List<Point> _sizes = new ArrayList<Point>();
 
 
     public ImageInfo(final IIIFImage pImage) {
-        this(pImage, 1024, 1024, 2);
+        this(pImage, 1024, 1024, 5);
     }
 
     public ImageInfo(final IIIFImage pImage, final int pTileWidth, final int pTileHeight, final int pZoomLevel) {
@@ -137,6 +140,10 @@ public class ImageInfo {
 
     public String getId() {
         return _image.getId();
+    }
+
+    public void setId(final String pId) {
+        _image.setId(pId);
     }
 
     public List<Integer> getScaleFactors() {

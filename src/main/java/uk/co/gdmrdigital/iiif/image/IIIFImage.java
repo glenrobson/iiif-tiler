@@ -7,6 +7,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+/**
+ * This class stores the source image as a BufferedImage and also works out the IIIF image identifier from the filename
+ */
 public class IIIFImage {
     protected BufferedImage _image = null;
     protected String _id = "";
