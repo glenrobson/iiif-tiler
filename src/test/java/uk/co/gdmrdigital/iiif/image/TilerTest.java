@@ -49,8 +49,8 @@ public class TilerTest {
         Tiler tTiler = new Tiler(tImageInfo, tVersion);
         tTiler.generateTiles(tOutputDir);
 
-        InfoJson tInfo = new InfoJson(tImageInfo, "http://localhost:8887/iiif/");
-        Map tInfoJson = tInfo.toJson(tVersion);
+        InfoJson tInfo = new InfoJson(tImageInfo, "http://localhost:8887/iiif/", tVersion);
+        Map tInfoJson = tInfo.toJson();
         assertTrue("Expected @id in info.json", tInfoJson.containsKey("@id"));
         assertEquals("Unexpected ID", "http://localhost:8887/iiif/67352ccc-d1b0-11e1-89ae-279075081939", (String)tInfoJson.get("@id"));
     }
@@ -68,8 +68,8 @@ public class TilerTest {
         Tiler tTiler = new Tiler(tImageInfo, tVersion);
         tTiler.generateTiles(tOutputDir);
 
-        InfoJson tInfo = new InfoJson(tImageInfo, "http://localhost:8887/iiif/");
-        Map tInfoJson = tInfo.toJson(tVersion);
+        InfoJson tInfo = new InfoJson(tImageInfo, "http://localhost:8887/iiif/", tVersion);
+        Map tInfoJson = tInfo.toJson();
         assertTrue("Expected @id in info.json", tInfoJson.containsKey("id"));
         assertEquals("Unexpected ID", "http://localhost:8887/iiif/67352ccc-d1b0-11e1-89ae-279075081939", (String)tInfoJson.get("id"));
     }
