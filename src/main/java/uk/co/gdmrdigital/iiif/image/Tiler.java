@@ -144,8 +144,8 @@ public class Tiler {
         Tiler tTiler = new Tiler(pImageFile, pVersion);
         tTiler.generateTiles(pOutputDir);
 
-        InfoJson tInfo = new InfoJson(pImageFile, pURI);
-        Map tInfoJson = tInfo.toJson(pVersion);
+        InfoJson tInfo = new InfoJson(pImageFile, pURI, pVersion);
+        Map tInfoJson = tInfo.toJson();
 
         JsonUtils.writePrettyPrint(new FileWriter(new File(tTiler.getOutputDir(pOutputDir),"info.json")), tInfoJson);
 

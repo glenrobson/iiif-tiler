@@ -16,29 +16,47 @@ public class InfoJson {
 
     protected ImageInfo _imageInfo = null;
     protected String _uri = "";
+    protected String _version = VERSION211;
 
-    public InfoJson(final ImageInfo pImageInfo, final String pURI) {
+    public InfoJson(final ImageInfo pImageInfo, final String pURI, final String pVersion) {
         _imageInfo = pImageInfo;
         _uri = pURI;
+        _version = pVersion;
     }
 
-    public Map toJson(final String pVersion) {
+    public String getId() {
+        return  _uri + _imageInfo.getId();
+    }
+
+    public int getWidth() {
+        return _imageInfo.getWidth();
+    }
+
+    public int getHeight() {
+        return _imageInfo.getHeight();
+    }
+
+    public String getVersion() {
+        return _version;
+    }
+
+    public Map toJson() {
         Map tInfoJson = new HashMap();
 
-        if (pVersion == InfoJson.VERSION3) { 
+        if (_version == InfoJson.VERSION3) { 
             tInfoJson.put("@context", "http://iiif.io/api/image/3/context.json");
-            tInfoJson.put("id", _uri + _imageInfo.getId());
+            tInfoJson.put("id",this.getId());
             tInfoJson.put("type", "ImageService3");
             tInfoJson.put("profile", "level0");
         } else {
             tInfoJson.put("@context", "http://iiif.io/api/image/2/context.json");
-            tInfoJson.put("@id", _uri + _imageInfo.getId());
+            tInfoJson.put("@id", this.getId());
             tInfoJson.put("profile", "http://iiif.io/api/image/2/level0.json");
         }
 
         tInfoJson.put("protocol", "http://iiif.io/api/image");
-        tInfoJson.put("width", _imageInfo.getWidth());
-        tInfoJson.put("height", _imageInfo.getHeight());
+        tInfoJson.put("width", this.getWidth());
+        tInfoJson.put("height", this.getHeight());
         List tSizesJson = new ArrayList();
         for (Point tSize : _imageInfo.getSizes()) {
             Map tSizeMap = new HashMap();
