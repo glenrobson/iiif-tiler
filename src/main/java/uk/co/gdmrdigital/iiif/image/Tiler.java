@@ -62,7 +62,7 @@ public class Tiler {
             BufferedImage tScaledImage = resizeOp.filter(_image.getImage(), null);
             String tSizeStr = tSize.x + ",";
             if (_version == InfoJson.VERSION3) {
-                // canonical from changes in version 3
+                // canonical form changes in version 3
                 tSizeStr = tSize.x + "," + tSize.y;
             }
             File tOuputFile = new File(pImageDir, "./full/" + tSizeStr + "/0/default.jpg");
