@@ -38,7 +38,7 @@ public class TilerTest {
      */
     @Test
     public void testVersion2() throws IOException {
-        File tOutputDir = new File("/tmp/test/2");//_tmp.newFolder("iiif");
+        File tOutputDir = _tmp.newFolder("iiif");
         File tImageFile = new File("images/67352ccc-d1b0-11e1-89ae-279075081939.jpg");
 
         IIIFImage tImage = new IIIFImage(tImageFile);
@@ -63,7 +63,7 @@ public class TilerTest {
 
     @Test
     public void testVersion3() throws IOException {
-        File tOutputDir = new File("/tmp/test/3");//_tmp.newFolder("iiif");
+        File tOutputDir = _tmp.newFolder("iiif");
         File tImageFile = new File("images/67352ccc-d1b0-11e1-89ae-279075081939.jpg");
 
         IIIFImage tImage = new IIIFImage(tImageFile);
