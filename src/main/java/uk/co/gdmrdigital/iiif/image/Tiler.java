@@ -61,16 +61,23 @@ public class Tiler {
             ResampleOp resizeOp = new ResampleOp(tSize.x, tSize.y);
             BufferedImage tScaledImage = resizeOp.filter(_image.getImage(), null);
             String tSizeStr = tSize.x + ",";
+            if (_version == InfoJson.VERSION3) {
+                // canonical from changes in version 3
+                tSizeStr = tSize.x + "," + tSize.y;
+            }
+            File tOuputFile = new File(pImageDir, "./full/" + tSizeStr + "/0/default.jpg");
+            tOuputFile.mkdirs();
+            ImageIO.write(tScaledImage, "jpg", tOuputFile);
             if (tSize.x == _image.getWidth() && tSize.y == _image.getHeight()) {
                 if (_version == InfoJson.VERSION3) { 
                     tSizeStr = "max";
                 } else {
                     tSizeStr = "full";
                 }
+                tOuputFile = new File(pImageDir, "./full/" + tSizeStr + "/0/default.jpg");
+                tOuputFile.mkdirs();
+                ImageIO.write(tScaledImage, "jpg", tOuputFile);
             }
-            File tOuputFile = new File(pImageDir, "./full/" + tSizeStr + "/0/default.jpg");
-            tOuputFile.mkdirs();
-            ImageIO.write(tScaledImage, "jpg", tOuputFile);
         }
     }
 
