@@ -119,7 +119,7 @@ public class ImageInfo {
         // Add full sizes (1 full directory then three sub directores (size/rotation/file)
         // And full w,h
        // System.out.println("Sizes " + (((pZoom + 1) * 3) + 1) + " should be 16");
-        tFileCount += ((pZoom + 2) * 3) + 1;
+        tFileCount += ((pZoom + 2) * 3) + 4;
 
         // Add info.json
         tFileCount++;

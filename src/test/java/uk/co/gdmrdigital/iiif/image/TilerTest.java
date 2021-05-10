@@ -53,6 +53,12 @@ public class TilerTest {
         Map tInfoJson = tInfo.toJson();
         assertTrue("Expected @id in info.json", tInfoJson.containsKey("@id"));
         assertEquals("Unexpected ID", "http://localhost:8887/iiif/67352ccc-d1b0-11e1-89ae-279075081939", (String)tInfoJson.get("@id"));
+
+        // Test conical sizes
+        for (Map<Integer, Integer> tSize : (List<Map<Integer,Integer>>)tInfoJson.get("sizes")) {
+            File tSizeImage = new File(tOutputDir, "67352ccc-d1b0-11e1-89ae-279075081939/full/" + tSize.get("width") + ",/0/default.jpg");
+            assertTrue("Size mentioned in the info.json is missing: " + tSizeImage.getPath(), tSizeImage.exists());
+        }
     }
 
     @Test
@@ -72,6 +78,13 @@ public class TilerTest {
         Map tInfoJson = tInfo.toJson();
         assertTrue("Expected @id in info.json", tInfoJson.containsKey("id"));
         assertEquals("Unexpected ID", "http://localhost:8887/iiif/67352ccc-d1b0-11e1-89ae-279075081939", (String)tInfoJson.get("id"));
+
+        // Test conical sizes
+        // https://iiif.io/api/image/3.0/change-log/#113-change-canonical-form-of-size-parameter-to-wh
+        for (Map<Integer, Integer> tSize : (List<Map<Integer,Integer>>)tInfoJson.get("sizes")) {
+            File tSizeImage = new File(tOutputDir, "67352ccc-d1b0-11e1-89ae-279075081939/full/" + tSize.get("width") + "," + tSize.get("height") + "/0/default.jpg");
+            assertTrue("Size mentioned in the info.json is missing: " + tSizeImage.getPath(), tSizeImage.exists());
+        }
     }
 
 
