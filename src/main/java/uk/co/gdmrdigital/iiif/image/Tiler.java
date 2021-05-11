@@ -106,6 +106,9 @@ public class Tiler {
                     }
 
                     String url = "./" + tileX + "," + tileY + "," + scaledTileWidth + "," + scaledTileHeight + "/" + tiledWidthCalc + ",/0/default.jpg";
+                    if (_version == InfoJson.VERSION3) { 
+                        url = "./" + tileX + "," + tileY + "," + scaledTileWidth + "," + scaledTileHeight + "/" + tiledWidthCalc + "," + tiledHeightCalc + "/0/default.jpg";
+                    } 
                     //System.out.println("Zoom level: " + scale);
                     //System.out.println(url);
                     File tOuputFile = new File(pImageDir, url);
