@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
+import org.apache.commons.cli.Options;
+
 import com.mortennobel.imagescaling.ResampleOp;
 
 import javax.imageio.ImageIO;
@@ -23,6 +25,12 @@ import com.github.jsonldjava.utils.JsonUtils;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Class that converts Images to IIIF tiles. It has static methods createImage and createImages to create the IIIF images
@@ -169,10 +177,11 @@ public class Tiler {
      * @param pZoomLevel the maximum amount of zoom levels to include in the IIIF image. A good value is 5 which works with Leaflet
      * @param pMaxFileNo if you want the number of tiles and info.json to fit into a maximum supply this variable. 
      * The number of zoom levels and tile sizes will be adjusted to try and fit the number of files under this limit. Set it to -1 to priortise the zoom level. 
+     * @param pTileSize the width and heigh of the tile. Note tiles can only be square in this implmentation. Use -1 for default of 1024.
      * @param pVersion either InfoJson.VERSION211 or InfoJson.VERSION3 
      * @throws IOException if there is an issue loading the source image or writing the IIIF image
      */
-    public static void createImages(final List<File> pFiles, final File pOutputDir, final int pZoomLevel, final int pMaxFileNo, final String pVersion) throws IOException {
+    public static void createImages(final List<File> pFiles, final File pOutputDir, final int pZoomLevel, final int pMaxFileNo, final int pTileSize, final String pVersion) throws IOException {
         for (File tInputFile : pFiles) {
             IIIFImage tImage = new IIIFImage(tInputFile);
 
@@ -184,25 +193,55 @@ public class Tiler {
                 tImageInfo.fitToZoomLevel();
             }
 
+            if (pTileSize != -1) {
+                tImageInfo.setTileWidth(pTileSize);
+                tImageInfo.setTileHeight(pTileSize);
+            }
+
             File tImageOutput = createImage(tImageInfo, pOutputDir, "http://localhost:8887/iiif/", pVersion);
             System.out.println("Converted " + tInputFile.getPath() + " to " + tImageOutput.getPath());
         }
     }
 
     public static void main(final String[] pArgs) throws IOException {
-        if (pArgs.length > 2) {
-            System.out.println("Usage:\n\tjava uk.org.gdmrdigital.iiif.image.Tiler [image] [zoom levels]");
-            System.out.println("Images can be in the following format:");
-            String[] imageFormats = ImageIO.getReaderFormatNames();
-            for (int i = 0; i < imageFormats.length; i++) {
-                System.out.println(" * " + imageFormats[i]);
-            }
-            System.exit(-1);
+        int tZoom = 5;
+        String tVersion = InfoJson.VERSION211;
+        int tTilesize = 1024;
+        String outputDir = "iiif";
+
+        Options tOptions = new Options();
+        tOptions.addOption("zoom_levels", true, "set the number of zoom levels for this image. The default is " + tZoom);
+        tOptions.addOption("version", true, "set the IIIF version. Default is " + tVersion + " and options are 2 or 3");
+        tOptions.addOption("tile_size", true, "set the tile size. Default is " + tTilesize);
+        tOptions.addOption("output", true, "Directory where the IIIF images are generated. Default: " + outputDir);
+        tOptions.addOption("help", false, "Show this help message");
+
+        // create the parser
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine tCmd = null;
+        try {
+            // parse the command line arguments
+            tCmd = parser.parse(tOptions, pArgs);
+        } catch(ParseException exp ) {
+            // oops, something went wrong
+            System.err.println("Parsing failed.  Reason: " + exp.getMessage() );
+            System.out.println(exp.getMessage());
+            formatter.printHelp("iiif-tiler", tOptions);
         }
+
+        if (tCmd.hasOption("help")) {
+            formatter.printHelp("iiif-tiler", tOptions);
+            System.exit(1);
+        }
+
         List<File> tInputFiles = new ArrayList<File>();
-        if (pArgs.length > 0) {
-            tInputFiles.add(new File(pArgs[0]));
+        if (!tCmd.getArgList().isEmpty()) {
+            for (String tFile : tCmd.getArgList()) {
+                tInputFiles.add(new File(tFile));
+            }
         } else {
+            System.out.println("Looking for images in current directory");
             // Look for supported files in the current directory
             File tCurrentDir = new File(System.getProperty("user.dir"));
             File[] tFiles = tCurrentDir.listFiles(new FilenameFilter() {
@@ -219,18 +258,41 @@ public class Tiler {
             for (int i = 0; i < tFiles.length; i++) {
                 tInputFiles.add(tFiles[i]);
             }
+            if (tInputFiles.size() == 0) {
+                System.err.println("Failed to find any images to process");
+                System.err.println("Exiting....");
+                System.exit(-1);
+            }
+            System.out.println("Found " + tInputFiles.size() + " image files.");
         }
-        int tZoom = 5;
         int tMaxFileNo = -1;
-        if (pArgs.length == 2) {
-            tZoom = Integer.parseInt(pArgs[1]);
+        if (tCmd.hasOption("zoom_levels")) {
+            tZoom = Integer.parseInt(tCmd.getOptionValue("zoom_levels"));
         }
 
-        File tOutputDir = new File("iiif");
-        System.out.println("Zoom level " + tZoom);
+        if (tCmd.hasOption("version")) {
+            if (tCmd.getOptionValue("version").contains("2")) {
+                tVersion = InfoJson.VERSION211;
+            } else if  (tCmd.getOptionValue("version").contains("3")) {
+                tVersion = InfoJson.VERSION3;
+            } else {
+                System.err.println("Unrecognised version '" + tCmd.getOptionValue("version") + "' value can either be 2 or 3.");
 
-        String tVersion = InfoJson.VERSION211;
+                formatter.printHelp("iiif-tiler", tOptions);
+            }
+        }
+
+        if (tCmd.hasOption("tile_size")) {
+            tTilesize = Integer.parseInt(tCmd.getOptionValue("tile_size"));
+        }
+
+        System.out.println("Zoom level " + tZoom);
+        File tOutputDir = new File(outputDir);
+        if (tCmd.hasOption("output")) {
+            tOutputDir = new File(tCmd.getOptionValue("output"));
+        }
+
         //String tVersion = InfoJson.VERSION3;
-        createImages(tInputFiles, tOutputDir, tZoom, tMaxFileNo, tVersion);
+        createImages(tInputFiles, tOutputDir, tZoom, tMaxFileNo, tTilesize, tVersion);
     }
 }
