@@ -19,7 +19,17 @@ java -jar target/iiif-tiler.jar images/67352ccc-d1b0-11e1-89ae-279075081939.jpg
 
 ## Options
 
-This generates tiles that are compatible with [IIIF Version 2](https://iiif.io/api/image/2.1/) and [Version 3.0](https://iiif.io/api/image/3.0/). Currently this is hard coded in [Tiler.java](https://github.com/glenrobson/iiif-tiler/blob/939ce3f929b415dd97d780033c2eef8ab31c4854/src/main/java/uk/co/gdmrdigital/iiif/image/Tiler.java#L126). 
+This generates tiles that are compatible with [IIIF Version 2](https://iiif.io/api/image/2.1/) and [Version 3.0](https://iiif.io/api/image/3.0/). This can be configured from the command line by passing `-version 3` parameter. A full list of parameters is below:
+
+```
+$ java -jar target/iiif-tiler.jar -help
+usage: iiif-tiler
+ -help                Show this help message
+ -output <arg>        Directory where the IIIF images are generated. Default: iiif
+ -tile_size <arg>     set the tile size. Default is 1024
+ -version <arg>       set the IIIF version. Default is 2.1.1 and options are 2 or 3
+ -zoom_levels <arg>   set the number of zoom levels for this image. The default is 5
+```
 
 ## Releases
 
