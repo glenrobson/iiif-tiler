@@ -254,6 +254,30 @@ public class TilerTest {
         //assertTrue("Correct rounding should exist. Didn't find tractor: /2048,0,1983,2048/992,/0/default.jpg", new File(tOutputDir, "tractor/2048,0,1983,2048/992,/0/default.jpg").exists());
     }   
 
+    @Test
+    public void testSmallTiles() throws IOException {
+        File tOutputDir = _tmp.newFolder("iiif");
+        File tImageFile = new File("images/brazil.jpg");
+
+        IIIFImage tImage = new IIIFImage(tImageFile);
+
+        ImageInfo tImageInfo = new ImageInfo(tImage, 1024, 1024, 5);
+
+        Tiler tTiler = new Tiler(tImageInfo, InfoJson.VERSION211);
+        tTiler.generateTiles(tOutputDir);
+
+        String[] tSmallTiles = {
+            "0,6144,2048,3/1024,/0/default.jpg",
+            "2048,6144,2048,3/1024,/0/default.jpg",
+            "4096,6144,2048,3/1024,/0/default.jpg",
+            "6144,6144,2048,3/1024,/0/default.jpg",
+            "8192,6144,1288,3/644,/0/default.jpg"
+        };
+        for (int i = 0; i < tSmallTiles.length; i++) {
+            assertTrue("Expected tile: " + tOutputDir.getPath() + "/brazil/" + tSmallTiles[i] + " to exist", new File(tOutputDir, "brazil/" + tSmallTiles[i]).exists());
+        }
+    }
+
     protected void printLevels(final List<String> pFiles) {
         Map<Integer, List<String>> tLevels = new java.util.HashMap<Integer, List<String>>();
         List<String> tFull = new ArrayList<String>();

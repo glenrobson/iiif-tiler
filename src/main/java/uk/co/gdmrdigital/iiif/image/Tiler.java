@@ -1,6 +1,7 @@
 package uk.co.gdmrdigital.iiif.image;
 
 import java.awt.image.BufferedImage;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -120,13 +121,36 @@ public class Tiler {
                     //System.out.println("Zoom level: " + scale);
                     //System.out.println(url);
                     File tOuputFile = new File(pImageDir, url);
-                    tOuputFile.mkdirs();
+                    tOuputFile.getParentFile().mkdirs();
 
                     BufferedImage tTileImg = _image.getImage().getSubimage(tileX, tileY, scaledTileWidth, scaledTileHeight);
-                    ResampleOp resizeOp = new ResampleOp(tiledWidthCalc, tiledHeightCalc);
-                    BufferedImage tScaledImage = resizeOp.filter(tTileImg, null);
+                    BufferedImage tScaledImage = null;
+                    if (tTileImg.getWidth(null) == tiledWidthCalc && tTileImg.getHeight(null) == tiledHeightCalc) {
+                        tScaledImage = tTileImg;
+                    } else if (tiledWidthCalc > 3 && tiledHeightCalc > 3) {
+                        try {
+                            ResampleOp resizeOp = new ResampleOp(tiledWidthCalc, tiledHeightCalc);
+                            tScaledImage = resizeOp.filter(tTileImg, null);
+                        } catch (RuntimeException tExcpt) {
+                            System.out.println("Tile: " + tOuputFile + " (width: " + scaledTileWidth + ", height: " + scaledTileHeight + ")");
+                            System.out.println("Tile Image: width: " + tTileImg.getWidth(null) + " height " + tTileImg.getHeight(null));
+                            System.out.println("Calculated width: " + tiledWidthCalc + " height: " + tiledHeightCalc);
+                            throw tExcpt;
+                        }
+                    } else {
+                        tScaledImage = new BufferedImage(tiledWidthCalc, tiledHeightCalc, tTileImg.getType());
 
-                    ImageIO.write(tScaledImage, "jpg", tOuputFile);
+                        Image tSmallImage = tTileImg.getScaledInstance(tiledWidthCalc, tiledHeightCalc, Image.SCALE_SMOOTH);
+
+                        Graphics2D graphics2D = tScaledImage.createGraphics();
+                        graphics2D.drawImage(tSmallImage, 0, 0, null);
+                        graphics2D.dispose();
+                    }
+
+                    boolean tSuccess = ImageIO.write(tScaledImage, "jpg", tOuputFile);
+                    if (!tSuccess) {
+                        System.out.println("Failed to write " + tOuputFile);
+                    }
                 }
             }
         }
