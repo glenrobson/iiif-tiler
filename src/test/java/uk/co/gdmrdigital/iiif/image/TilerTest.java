@@ -18,6 +18,8 @@ import uk.co.gdmrdigital.iiif.image.InfoJson;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -87,6 +89,30 @@ public class TilerTest {
         }
     }
 
+    @Test
+    public void testExactTileMatch() throws IOException {
+        File tOutputDir = _tmp.newFolder("iiif");
+        File tImageFile = new File("images/exact_tiles.jpg");
+
+        IIIFImage tImage = new IIIFImage(tImageFile);
+
+        ImageInfo tImageInfo = new ImageInfo(tImage);
+        String tVersion = InfoJson.VERSION211;
+
+        Tiler tTiler = new Tiler(tImageInfo, tVersion);
+        tTiler.generateTiles(tOutputDir);
+
+        InfoJson tInfo = new InfoJson(tImageInfo, "http://localhost:8887/iiif/", tVersion);
+
+        File imgDir = new File(tOutputDir, "exact_tiles"); 
+
+        List<String> expectedFiles = Arrays.asList("0,0,1024,1024", "0,0,2048,2048", "0,1024,1024,1024", "1024,0,1024,1024", "1024,1024,1024,1024", "full");
+
+        Collections.sort(expectedFiles);
+        List<String> tFiles = Arrays.asList(imgDir.list());
+        Collections.sort(tFiles);
+        assertEquals("Unexpected files from exact tile match image", expectedFiles, tFiles); 
+    }
 
     @Test
     public void testCheckCount() throws IOException {
