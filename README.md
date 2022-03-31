@@ -33,4 +33,6 @@ usage: iiif-tiler
 
 ## Releases
 
-The releasable jar file with all of the dependencies is in `target/iiif-tiler.jar`. The basic code without dependencies is in `target/iiif-tiler-$version.jar`. To release a new version to maven central run `mvn deploy`
+The releasable jar file with all of the dependencies is in `target/iiif-tiler.jar`. The basic code without dependencies is in `target/iiif-tiler-$version.jar`. 
+
+To release a new version to maven central create a new release on Github or run `mvn clean deploy`.
