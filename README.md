@@ -26,6 +26,7 @@ $ java -jar target/iiif-tiler.jar -help
 usage: iiif-tiler
  -help                Show this help message
  -output <arg>        Directory where the IIIF images are generated. Default: iiif
+ -identifier <arg>    The root of the identifier in the info.json. The filename directory is appended. Default: `http://localhost:8887/iiif/`
  -tile_size <arg>     set the tile size. Default is 1024
  -version <arg>       set the IIIF version. Default is 2.1.1 and options are 2 or 3
  -zoom_levels <arg>   set the number of zoom levels for this image. The default is 5
