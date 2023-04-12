@@ -96,12 +96,14 @@ public class Tiler {
             int tScaleLevelHeight = (int)(_image.getHeight() / scale);
             int tTileNumWidth = (int)(tScaleLevelWidth / _image.getTileWidth());
             int tTileNumHeight = (int)(tScaleLevelHeight / _image.getTileHeight());
-            if (tScaleLevelWidth % _image.getTileWidth() != 0) {
+            // This needs to be ceil just in case the 
+            // int value of width/scale is exactly devisable by tileWidth 
+            if (Math.ceil((double)_image.getWidth() / scale) % _image.getTileWidth() != 0) {
                 // width doesn't divide exactly into tiles so add 1 to get the last tile
                 tTileNumWidth++;
             }
 
-            if (tScaleLevelHeight % _image.getTileHeight() != 0) {
+            if (Math.ceil((double)_image.getHeight() / scale) % _image.getTileHeight() != 0) {
                 tTileNumHeight++;
             }
 
