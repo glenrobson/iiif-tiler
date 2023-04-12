@@ -280,6 +280,26 @@ public class TilerTest {
         //assertTrue("Correct rounding should exist. Didn't find tractor: /2048,0,1983,2048/992,/0/default.jpg", new File(tOutputDir, "tractor/2048,0,1983,2048/992,/0/default.jpg").exists());
     }   
 
+    /**
+     * Test issue where the rounded scale exactly goes into the tile width. This can only happen 
+     * if the width of the source image is 2*tileWidth + 1
+     * @throws IOException
+     */
+    @Test
+    public void testOddSizedImage() throws IOException {
+        File tOutputDir = _tmp.newFolder("iiif");
+        File tImageFile = new File("images/odd-sized.jpg");
+
+        IIIFImage tImage = new IIIFImage(tImageFile);
+
+        ImageInfo tImageInfo = new ImageInfo(tImage, 512, 512, 1);
+
+        Tiler tTiler = new Tiler(tImageInfo, InfoJson.VERSION211);
+        tTiler.generateTiles(tOutputDir);
+
+        assertTrue("Missed bottom 1 pixel tile. Did not find odd-sized/0,3072,1024,1/512,/0/default.jpg", new File(tOutputDir, "odd-sized/0,3072,1024,1/512,/0/default.jpg").exists());
+    }
+
     @Test
     public void testSmallTiles() throws IOException {
         File tOutputDir = _tmp.newFolder("iiif");
