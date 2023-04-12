@@ -213,7 +213,7 @@ public class Tiler {
      * @param pVersion either InfoJson.VERSION211 or InfoJson.VERSION3 
      * @throws IOException if there is an issue loading the source image or writing the IIIF image
      */
-    public static void createImages(final List<File> pFiles, final File pOutputDir, final int pZoomLevel, final int pMaxFileNo, final int pTileSize, final String pVersion) throws IOException {
+    public static void createImages(final List<File> pFiles, final File pOutputDir, final String pIdentifier, final int pZoomLevel, final int pMaxFileNo, final int pTileSize, final String pVersion) throws IOException {
         for (File tInputFile : pFiles) {
             IIIFImage tImage = new IIIFImage(tInputFile);
 
@@ -230,7 +230,7 @@ public class Tiler {
                 tImageInfo.setTileHeight(pTileSize);
             }
 
-            File tImageOutput = createImage(tImageInfo, pOutputDir, "http://localhost:8887/iiif/", pVersion);
+            File tImageOutput = createImage(tImageInfo, pOutputDir, pIdentifier, pVersion);
             System.out.println("Converted " + tInputFile.getPath() + " to " + tImageOutput.getPath());
         }
     }
@@ -240,8 +240,10 @@ public class Tiler {
         String tVersion = InfoJson.VERSION211;
         int tTilesize = 1024;
         String outputDir = "iiif";
+        String identifier_root = "http://localhost:8887/iiif/";
 
         Options tOptions = new Options();
+        tOptions.addOption("identifier", true, "Set the identifier in the info.json. The default is " + identifier_root);
         tOptions.addOption("zoom_levels", true, "set the number of zoom levels for this image. The default is " + tZoom);
         tOptions.addOption("version", true, "set the IIIF version. Default is " + tVersion + " and options are 2 or 3");
         tOptions.addOption("tile_size", true, "set the tile size. Default is " + tTilesize);
@@ -297,6 +299,9 @@ public class Tiler {
             }
             System.out.println("Found " + tInputFiles.size() + " image files.");
         }
+        if (tCmd.hasOption("identifier")) {
+            identifier_root = tCmd.getOptionValue("identifier");
+        }
         int tMaxFileNo = -1;
         if (tCmd.hasOption("zoom_levels")) {
             tZoom = Integer.parseInt(tCmd.getOptionValue("zoom_levels"));
@@ -325,6 +330,6 @@ public class Tiler {
         }
 
         //String tVersion = InfoJson.VERSION3;
-        createImages(tInputFiles, tOutputDir, tZoom, tMaxFileNo, tTilesize, tVersion);
+        createImages(tInputFiles, tOutputDir, identifier_root, tZoom, tMaxFileNo, tTilesize, tVersion);
     }
 }
