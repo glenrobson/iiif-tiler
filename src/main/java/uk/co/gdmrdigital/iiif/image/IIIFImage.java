@@ -1,6 +1,7 @@
 package uk.co.gdmrdigital.iiif.image;
 
 import java.awt.image.BufferedImage;
+import java.awt.Graphics;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,17 @@ public class IIIFImage {
             _image = ImageIO.read(pImageFile);
         } catch (IOException exception) {
             throw exception;
+        }
+
+        if (_image.getColorModel().hasAlpha()) {
+            // If image has Alpha remove it as jpg doesn't support Alpha
+            BufferedImage withoutAlpha = new BufferedImage((int) _image.getWidth(),
+                                                            (int) _image.getHeight(), 
+                                                                BufferedImage.TYPE_INT_RGB);
+            Graphics g = withoutAlpha.getGraphics();
+            g.drawImage(_image, 0, 0, null);
+            g.dispose();
+            _image = withoutAlpha;
         }
         this.setId(pImageFile.getName().split("\\.")[0]);
     }
