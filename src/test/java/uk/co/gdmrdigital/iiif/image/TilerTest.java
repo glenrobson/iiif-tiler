@@ -324,6 +324,30 @@ public class TilerTest {
         }
     }
 
+    @Test
+    public void testAlphaChannel() throws IOException {
+        File tOutputDir = _tmp.newFolder("iiif");
+        File tImageFile = new File("images/alpha.png");
+
+        IIIFImage tImage = new IIIFImage(tImageFile);
+
+        ImageInfo tImageInfo = new ImageInfo(tImage, 256, 256, 5);
+
+        Tiler tTiler = new Tiler(tImageInfo, InfoJson.VERSION211);
+        tTiler.generateTiles(tOutputDir);
+
+        String[] tSmallTiles = {
+            "0,0,256,256/256,/0/default.jpg",
+            "512,256,256,216/256,/0/default.jpg",
+            "0,0,256,256/256,/0/default.jpg",
+            "512,0,512,472/256,/0/default.jpg",
+            "0,0,1024,472/256,/0/default.jpg"
+        };
+        for (int i = 0; i < tSmallTiles.length; i++) {
+            assertTrue("Expected tile: " + tOutputDir.getPath() + "/alpha/" + tSmallTiles[i] + " to exist", new File(tOutputDir, "alpha/" + tSmallTiles[i]).exists());
+        }
+    }
+
     protected void printLevels(final List<String> pFiles) {
         Map<Integer, List<String>> tLevels = new java.util.HashMap<Integer, List<String>>();
         List<String> tFull = new ArrayList<String>();
