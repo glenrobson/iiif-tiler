@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 
 import org.apache.commons.cli.Options;
 
@@ -20,7 +19,6 @@ import java.io.FilenameFilter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 
 import com.github.jsonldjava.utils.JsonUtils;
 
@@ -159,7 +157,7 @@ public class Tiler {
 
                     boolean tSuccess = ImageIO.write(tScaledImage, "jpg", tOuputFile);
                     if (!tSuccess) {
-                        System.out.println("Failed to write " + tOuputFile);
+                        System.out.println("Failed to write: '" + tOuputFile + "' (" + tScaledImage.getWidth() + "," + tScaledImage.getHeight() + ")");
                     }
                 }
             }
